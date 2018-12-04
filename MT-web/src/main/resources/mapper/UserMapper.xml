@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.spring.springboot.dao.UserDao">
+  <resultMap id="BaseResultMap" type="org.spring.springboot.domain.User">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="login_name" jdbcType="VARCHAR" property="loginName" />
+    <result column="login_password" jdbcType="VARCHAR" property="loginPassword" />
+    <result column="real_name" jdbcType="VARCHAR" property="realName" />
+    <result column="phone" jdbcType="VARCHAR" property="phone" />
+    <result column="idcard" jdbcType="VARCHAR" property="idcard" />
+    <result column="sex" jdbcType="CHAR" property="sex" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="last_login_time" jdbcType="TIMESTAMP" property="lastLoginTime" />
+    <result column="enable" jdbcType="CHAR" property="enable" />
+    <result column="photo" jdbcType="VARCHAR" property="photo" />
+    <result column="address" jdbcType="VARCHAR" property="address" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+
+  <!-- fingUserByUserName -->
+  <select id="fingUserByUserName" resultMap="BaseResultMap" parameterType="java.lang.String">
+    select
+    id, login_name, login_password, real_name, phone, idcard, sex, create_time, last_login_time,
+    `enable`, photo, address, update_time
+    from user
+    where login_name = #{loginName}
+  </select>
+
+  <!-- addUserInfo -->
+  <insert id="addUserInfo" keyColumn="id" keyProperty="id" parameterType="org.spring.springboot.domain.User" useGeneratedKeys="true">
+    insert into user (login_name, login_password, real_name,
+      phone, idcard, sex, create_time,
+      last_login_time, `enable`, photo,
+      address, update_time)
+    values (#{loginName,jdbcType=VARCHAR}, #{loginPassword,jdbcType=VARCHAR}, #{realName,jdbcType=VARCHAR},
+      #{phone,jdbcType=VARCHAR}, #{idcard,jdbcType=VARCHAR}, #{sex,jdbcType=CHAR}, #{createTime,jdbcType=TIMESTAMP},
+      #{lastLoginTime,jdbcType=TIMESTAMP}, #{enable,jdbcType=CHAR}, #{photo,jdbcType=VARCHAR},
+      #{address,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+
+
+<!-- selecetAll -->
+  <select id="selecetAll" resultMap="BaseResultMap" parameterType="org.spring.springboot.domain.User">
+    select
+     id, login_name, login_password, real_name, phone, idcard, sex, create_time, last_login_time,
+    `enable`, photo, address, update_time
+    from user
+    where `enable`=0
+      <if test="loginName != null">
+         and  login_name like  #{loginName,jdbcType=VARCHAR}
+      </if>
+  </select>
+
+  <!-- selecetAll 分页-->
+  <!--<select id="selecetPage" resultMap="BaseResultMap" >-->
+    <!--select-->
+     <!--id, login_name, login_password, real_name, phone, idcard, sex, create_time, last_login_time,-->
+    <!--`enable`, photo, address, update_time-->
+    <!--from user-->
+    <!--where `enable`=0 limit  #{start} , #{end}-->
+  <!--</select>-->
+
+
+  <!-- updateUserInfo 更新用户信息-->
+  <update id="updateUserInfo" parameterType="org.spring.springboot.domain.User">
+    update user
+    <set>
+      <trim  suffixOverrides=",">
+      <if test="loginName != null">
+      login_name = #{loginName,jdbcType=VARCHAR},
+    </if>
+    <if test="loginPassword != null">
+      login_password = #{loginPassword,jdbcType=VARCHAR},
+    </if>
+    <if test="realName != null">
+      real_name = #{realName,jdbcType=VARCHAR},
+    </if>
+    <if test="phone != null">
+      phone = #{phone,jdbcType=VARCHAR},
+    </if>
+    <if test="idcard != null">
+      idcard = #{idcard,jdbcType=VARCHAR},
+    </if>
+    <if test="sex != null">
+      sex = #{sex,jdbcType=CHAR},
+    </if>
+    <if test="createTime != null">
+      create_time = #{createTime,jdbcType=TIMESTAMP}
+    </if>
+    <if test="lastLoginTime != null">
+      last_login_time = #{lastLoginTime,jdbcType=TIMESTAMP},
+    </if>
+    <if test="enable != null">
+      `enable` = #{enable,jdbcType=CHAR},
+    </if>
+    <if test="photo != null">
+      photo = #{photo,jdbcType=VARCHAR},
+    </if>
+    <if test="address != null">
+      address = #{address,jdbcType=VARCHAR},
+    </if>
+    <if test="updateTime != null">
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+    </if>
+      </trim>
+    where id = #{id,jdbcType=BIGINT}
+    </set>
+  </update>
+
+
+  <!-- deleteUserById -->
+  <update id="deleteUserById" parameterType="java.lang.Long">
+    update user
+    <set>
+      `enable`=1
+      where id = #{id}
+    </set>
+  </update>
+
+    <select id="getCountAll" resultType="java.lang.Long">
+       select count(*) from user where enable=0
+    </select>
+
+</mapper>
