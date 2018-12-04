@@ -14,6 +14,7 @@ import org.spring.springboot.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
@@ -25,6 +26,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.*;
+
+import static org.springframework.data.mongodb.core.query.Criteria.where;
 
 @Component
 public class MtTask {
@@ -133,43 +136,47 @@ public class MtTask {
 //    @Scheduled(cron = "0 * 2 * * ?")
    @Scheduled(cron = "0 0/20 * * * ?")
     public void excel() throws ParseException {
-        List<Messages> messagesList = new ArrayList<>();
-        for(int i = 0 ;i<15;i++){
-            Messages messages = new Messages();
-            String date = DateUtil.getDateByDay_yyyy_hh_ss(i);
-            messages.setCreate(date);
+       List<Messages> messagesList = new ArrayList<>();
+       Messages messages = new Messages();
+       String date = DateUtil.getDateByDay_yyyy_hh_ss(0);
+       messages.setCreate(date);
 //            System.out.println(date);
-            //查询某一天的某个状态的量
-            String status = "3"; //已经领取过了，不能重复领取
-            long alreadyReceived = mongodbMtOldService.mongodbFindListStatistic(i, status,null);
-            status = "4";//风控的
-            long risk = mongodbMtOldService.mongodbFindListStatistic(i, status,null);
-            status = "2";//用户未中奖
-            long no_prize = mongodbMtOldService.mongodbFindListStatistic(i, status,null);
-            status = "9";//系统故障
-            long systemFailure = mongodbMtOldService.mongodbFindListStatistic(i, status,null);
-            status = "8";//访问频繁
-            long frequently = mongodbMtOldService.mongodbFindListStatistic(i, status,null);
-            status = "5";//错误的手机号
-            long errorPhone = mongodbMtOldService.mongodbFindListStatistic(i, status,null);
-            status = "1";//领取成功(新用户和老用户)
-            long success = mongodbMtOldService.mongodbFindListStatistic(i, status,null);
-            String couponDisplayName = "1";//新用户(首单)
-            long newPeople = mongodbMtOldService.mongodbFindListStatistic(i, status,couponDisplayName);
-            messages.setAlreadyReceived(alreadyReceived+"");
-            messages.setRisk(risk+"");
-            messages.setNo_prize(no_prize+"");
-            messages.setSystemFailure(systemFailure+"");
-            messages.setFrequently(frequently+"");
-            messages.setErrorPhone(errorPhone+"");
-            messages.setSuccess(success+"");
-            messages.setNewPeople(newPeople+"");
-            messagesList.add(messages);
-//            System.out.println(i);
-        }
-        JSONArray JS = JSONArray.fromObject(messagesList);
-        JSONObject o  = (JSONObject)((Object) messagesList);
-        redisTemplate.opsForValue().set("newMessagesList", JS.toString(),1728000, TimeUnit.SECONDS);
+       //查询某一天的某个状态的量
+       String status = "3"; //已经领取过了，不能重复领取
+       long alreadyReceived = mongodbMtOldService.mongodbFindListStatistic(0, status,null);
+       status = "4";//风控的
+       long risk = mongodbMtOldService.mongodbFindListStatistic(0, status,null);
+       status = "2";//用户未中奖
+       long no_prize = mongodbMtOldService.mongodbFindListStatistic(0, status,null);
+       status = "9";//系统故障
+       long systemFailure = mongodbMtOldService.mongodbFindListStatistic(0, status,null);
+       status = "8";//访问频繁
+       long frequently = mongodbMtOldService.mongodbFindListStatistic(0, status,null);
+       status = "5";//错误的手机号
+       long errorPhone = mongodbMtOldService.mongodbFindListStatistic(0, status,null);
+       status = "1";//领取成功(新用户和老用户)
+       long success = mongodbMtOldService.mongodbFindListStatistic(0, status,null);
+       String couponDisplayName = "1";//新用户(首单)
+       long newPeople = mongodbMtOldService.mongodbFindListStatistic(0, status,couponDisplayName);
+       messages.setAlreadyReceived(alreadyReceived+"");
+       messages.setRisk(risk+"");
+       messages.setNo_prize(no_prize+"");
+       messages.setSystemFailure(systemFailure+"");
+       messages.setFrequently(frequently+"");
+       messages.setErrorPhone(errorPhone+"");
+       messages.setSuccess(success+"");
+       messages.setNewPeople(newPeople+"");
+       messagesList.add(messages);
+       Query query = new Query();
+       query.addCriteria(where("create").is(date));
+       boolean exists = mongoTemplate.exists(query, Messages.class);
+       Update update = new Update();
+       update.set("*",messages);
+       mongoTemplate.upsert(query, update, Messages.class);
+       List<Messages> all = mongoTemplate.findAll(Messages.class);
+       JSONArray JS = JSONArray.fromObject(all);
+       JSONObject o  = (JSONObject)((Object) messagesList);
+       redisTemplate.opsForValue().set("newMessagesList", JS.toString(),1728000, TimeUnit.SECONDS);
     }
 
 

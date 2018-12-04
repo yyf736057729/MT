@@ -25,7 +25,7 @@ public class Messages implements Serializable {
     private String newPeople;
     private String counts;
     private String messages;
-    private int id;
+    private String id;
 
     public String getCreate() {
         return create;
@@ -115,11 +115,11 @@ public class Messages implements Serializable {
         this.messages = messages;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 }

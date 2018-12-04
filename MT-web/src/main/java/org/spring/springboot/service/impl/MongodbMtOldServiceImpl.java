@@ -10,8 +10,10 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.regex.Pattern;
 
 @Component
@@ -44,19 +46,9 @@ public class MongodbMtOldServiceImpl implements MongodbMtOldService {
     public int mongodbFindCount(Date date) {
         //用来封装所有条件的对象
         Query query = new Query();
-        //用来构建条件
-        query.addCriteria(Criteria.where("create").gte(date));
+        Date date1 = DateUtil.formatStrDateToUTCStr(date);
+        query.addCriteria(Criteria.where("create").gte(date1));
         long number = mongoTemplate.count(query, "statistics");//(query,返回类型.class,collectionName);
-//        Statistic st = new Statistic();
-//        BeanUtils.copyProperties(query, st);
-//        ExampleMatcher matcher = ExampleMatcher.matching()
-//                .withStringMatcher(ExampleMatcher.StringMatcher.EXACT) //改变默认字符串匹配方式：模糊查询
-//                .withIgnoreCase(true) //改变默认大小写忽略方式：忽略大小写
-//                .withMatcher("create", ExampleMatcher.GenericPropertyMatchers.contains()) //采用“包含匹配”的方式查询
-//              ;  //忽略属性，不参与查询;
-//        Example<Statistic> example = Example.of(st, matcher);
-//        long count = mongodbMtOldDao.count(example);
-
         return (int) number;
     }
 
@@ -127,21 +119,24 @@ public class MongodbMtOldServiceImpl implements MongodbMtOldService {
      * @return
      */
     public long mongodbFindListStatistic(int i,String message,String couponDisplayName) {
-//        Date dateByDay_yyyy_hh_ss = DateUtil.getDateByDay_yyyy_hh_ss(8);
+        long current=System.currentTimeMillis();//当前时间毫秒数
+        long zero=current/(1000*3600*24)*(1000*3600*24)- TimeZone.getDefault().getRawOffset();//今天零点零分零秒的毫秒数
+        Timestamp timestamp = new Timestamp(zero);
         Query query = new Query();
-//        Date dateByDay_yyyy_hh_ss1= DateUtil.getDateByDay_yyyy_hh_ss(0);
-//                                              "2018/11/24"
-//        Pattern pattern=Pattern.compile("^.*"+"2018"+".*$", Pattern.CASE_INSENSITIVE);
-
-//        query.addCriteria(Criteria.where("create").regex(pattern));
-        Date dateByBeforeDays = DateUtil.getDateByBeforeDays(i);
-        Date dateByBeforeDays2 = DateUtil.getDateByBeforeDays(i-1);
-        if(null != couponDisplayName){
-            query.addCriteria(Criteria.where("create").lt(DateUtil.getDateByBeforeDays(i)).gte(DateUtil.getDateByBeforeDays(i-1)).and("coupon_display_name").
-                            is(couponDisplayName).and("message").is(message)
-                    );
+        Date dateByBeforeDays2 = DateUtil.getDateByBeforeDays(-i-1);
+        Date date1 = DateUtil.formatStrDateToUTCStr(timestamp);
+        Date date2 = DateUtil.formatStrDateToUTCStr(dateByBeforeDays2);
+        if(null != couponDisplayName && !"4".equals(message)){
+            query.addCriteria(Criteria.where("create").gte(date1).and("coupon_display_name").
+                    is(couponDisplayName).and("message").is(message)
+            );
+        }else if(null != couponDisplayName && "4".equals(message)){
+            query.addCriteria(Criteria.where("create").gte(date1)
+                    .and("coupon_display_name").
+                            is(couponDisplayName).orOperator(Criteria.where("message").is("4"),Criteria.where("message").is("40"))
+            );
         }else{
-            query.addCriteria(Criteria.where("create").lt(DateUtil.getDateByBeforeDays(i)).gte(DateUtil.getDateByBeforeDays(i-1)).and("message").is(message));
+            query.addCriteria(Criteria.where("create").gte(date1).and("message").is(message));
         }
 //        Criteria criteria = new Criteria();
         long count = mongoTemplate.count(query, Statistic.class);

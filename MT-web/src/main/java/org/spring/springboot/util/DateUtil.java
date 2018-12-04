@@ -179,6 +179,18 @@ public class DateUtil {
         c.add(Calendar.DAY_OF_MONTH, days);
         return c.getTime();
     }
+    /**
+     * 获取当前时间的前8个小时的时间
+     * 
+     * @param utcTime 时间
+     * @return
+     */
+    public static Date formatStrDateToUTCStr(Date date) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);//date 换成已经已知的Date对象
+        cal.add(Calendar.HOUR_OF_DAY, 8);// before 8 hour
+        return cal.getTime();
+    }
 
 
     /**
