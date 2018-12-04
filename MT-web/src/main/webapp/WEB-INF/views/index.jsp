@@ -218,7 +218,7 @@
             type: "POST",
             contentType: false,
             processData: false,
-            url: "/uploadFile", //url
+            url: "/batch/upload", //url
             data: formData,
             async: false,
             error: function (request) {

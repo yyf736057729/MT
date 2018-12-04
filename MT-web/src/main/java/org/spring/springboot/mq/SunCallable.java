@@ -47,14 +47,9 @@ public class SunCallable implements Callable<Boolean> {
 	List<Phone> phones = null;
 	@Override
 	public Boolean call() throws Exception {
-                System.err.println(String.format("pageIndex:%s size:%s",pageIndex,list.size()));
+		System.err.println(String.format("pageIndex:%s size:%s",pageIndex,list.size()));
 		Boolean result = Boolean.TRUE;
-        System.out.println(list);
         mongoTemplate.insertAll(list);
-        Query query = new Query();
-        long phone1 = mongoTemplate.count(query, "phone");
-        System.out.println(phone1);
-        List<Phone> phoneList = new ArrayList<>();
 		return result;
 	}
 }

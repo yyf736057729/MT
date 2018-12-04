@@ -51,7 +51,7 @@ public class FileController {
         }
 
 
-        List<MultipartFile> files = ((MultipartHttpServletRequest)request).getFiles("file");
+        List<MultipartFile> files = ((MultipartHttpServletRequest)request).getFiles("files");
         MultipartFile file = null;
         BufferedOutputStream stream = null;
         for (int i =0;i<files.size();++i){
@@ -59,7 +59,7 @@ public class FileController {
             if(!file.isEmpty()){
                 try {
                     byte[] bytes = file.getBytes();
-                    stream = new BufferedOutputStream(new FileOutputStream(new File(path + file.getOriginalFilename())));
+                    stream = new BufferedOutputStream(new FileOutputStream(new File(path+"/"+ Common.count++ +"__"+file.getOriginalFilename())));
                     stream.write(bytes);
                     stream.close();
 
@@ -72,6 +72,7 @@ public class FileController {
                 return "上传失败"+i+",文件为空";
             }
         }
+        System.out.println("------号码文件上传成功------今日上传数量:{"+Common.count+"}");
         return "上传成功";
     }
 
