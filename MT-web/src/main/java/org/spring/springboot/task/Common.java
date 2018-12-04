@@ -13,5 +13,5 @@ public class Common {
 
     public static int MQSEND = 0;
 
-    public static String UPLOADFILEPATH = "E:\\uploadfile\\";
+    public static String UPLOADFILEPATH = "/opt/MT/phone_number_file/";
 }
