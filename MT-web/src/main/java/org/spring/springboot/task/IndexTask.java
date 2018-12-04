@@ -71,5 +71,7 @@ public class IndexTask {
         countByRedis.setNotCount(notCount);
         net.sf.json.JSONObject jsonObject = net.sf.json.JSONObject.fromObject(countByRedis);
         redisTemplate.opsForValue().set("newFindCount", jsonObject.toString(),129600, TimeUnit.SECONDS);
+
+
     }
 }

@@ -177,6 +177,8 @@ public class MtTask {
        JSONArray JS = JSONArray.fromObject(all);
        JSONObject o  = (JSONObject)((Object) messagesList);
        redisTemplate.opsForValue().set("newMessagesList", JS.toString(),1728000, TimeUnit.SECONDS);
+
+
     }
 
 

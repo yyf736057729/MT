@@ -49,6 +49,7 @@ public class MongodbMtOldServiceImpl implements MongodbMtOldService {
         Date date1 = DateUtil.formatStrDateToUTCStr(date);
         query.addCriteria(Criteria.where("create").gte(date1));
         long number = mongoTemplate.count(query, "statistics");//(query,返回类型.class,collectionName);
+
         return (int) number;
     }
 
@@ -140,6 +141,8 @@ public class MongodbMtOldServiceImpl implements MongodbMtOldService {
         }
 //        Criteria criteria = new Criteria();
         long count = mongoTemplate.count(query, Statistic.class);
+
+
 
         return count;
     }

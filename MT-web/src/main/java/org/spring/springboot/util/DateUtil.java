@@ -178,6 +178,7 @@ public class DateUtil {
         Calendar c = Calendar.getInstance();
         c.add(Calendar.DAY_OF_MONTH, days);
         return c.getTime();
+
     }
     /**
      * 获取当前时间的前8个小时的时间

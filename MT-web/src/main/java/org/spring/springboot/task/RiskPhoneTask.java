@@ -65,5 +65,7 @@ public class RiskPhoneTask {
             ops.execute();
         }
         mongoTemplate.insertAll(phones);
+
+
     }
 }
