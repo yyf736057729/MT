@@ -1,9 +1,11 @@
 package org.spring.springboot.domain;
 
 import org.spring.springboot.util.ExcelAnnotation;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.io.Serializable;
-
+@Document(collection = "statistic_by_day")
 public class Messages implements Serializable {
     @ExcelAnnotation(id = 1, name = {"日期"}, width = 5000)
     private String create;//已经领取过了，不能重复领取
@@ -25,6 +27,7 @@ public class Messages implements Serializable {
     private String newPeople;
     private String counts;
     private String messages;
+    @Id
     private String id;
 
     public String getCreate() {
