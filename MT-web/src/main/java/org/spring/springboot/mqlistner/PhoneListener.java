@@ -13,14 +13,12 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.concurrent.*;
 
 @Component
 public class PhoneListener {
@@ -36,10 +34,13 @@ public class PhoneListener {
 
     @Autowired
     private StatisticsMongoDao statisticsMongoDao;
+    @Autowired
+    private ThreadPoolTaskExecutor threadPoolTaskExecutor;
 
     private long count;
 
     private static final Logger LOG = Logger.getLogger(PhoneListener.class);
+
 
     @Autowired(required = false)
     public void setRedisTemplate(RedisTemplate redisTemplate) {
@@ -56,7 +57,7 @@ public class PhoneListener {
 
     @Autowired
     private MongodbPhoneService mongodbPhoneService;
-    @RabbitListener(queues="MT-phone")    //监听器监听指定的Queue
+    @RabbitListener(queues="MT-phone-one")    //监听器监听指定的Queue
     public void processC(List<Phone> phones) {
         try {
 //            //消费手机号码信息，
@@ -70,16 +71,12 @@ public class PhoneListener {
 
 
     private void doReadList(List list) throws InterruptedException, ExecutionException, ExecutionException {
-        ExecutorService threadPoolTaskExecutor = Executors.newFixedThreadPool(10);
-
-
+//        ExecutorService threadPoolTaskExecutor = Executors.newFixedThreadPool(16);
         /**接收集合各段的 执行的返回结果**/
-        List<Future<Boolean>> futureList = new ArrayList<Future<Boolean>>();
-
         /**集合总条数**/
         int size = list.size();
         /**将集合切分的段数**/
-        int sunSum = 10;
+        int sunSum = 16;
         int listStart,listEnd;
         /***当总条数不足10条时 用总条数 当做线程切分值**/
         if(sunSum > size){
@@ -101,16 +98,9 @@ public class PhoneListener {
             /**子线程初始化**/
             phoneCallable = new PhoneCallable(i,sunList, mongodbPhoneService, mongodbMtOldService,redisTemplate,statisticsMongoDao,mongoTemplate);
             /***多线程执行***/
-            futureList.add(threadPoolTaskExecutor.submit(phoneCallable));
+            threadPoolTaskExecutor.execute(phoneCallable);
         }
-        /**对各个线程段结果进行解析**/
-        for(Future<Boolean> future : futureList){
-            if(null != future && future.get()){
-                System.err.println("成功");
-            }else{
-                System.err.println("失败");
-            }
-        }
+
     }
 
 }

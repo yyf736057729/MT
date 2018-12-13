@@ -187,7 +187,7 @@ public class DateUtil {
     public static Date formatStrDateToUTCStr(Date date) {
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);//date 换成已经已知的Date对象
-        cal.add(Calendar.HOUR_OF_DAY, 8);// before 8 hour
+        cal.add(Calendar.HOUR_OF_DAY, 0);// before 8 hour
         return cal.getTime();
     }
 

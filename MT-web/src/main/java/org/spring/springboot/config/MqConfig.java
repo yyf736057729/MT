@@ -15,7 +15,7 @@ public class MqConfig {
 
     @Bean
     public Queue queue2(){
-        return new Queue("MT-phone");
+        return new Queue("MT-phone-one");
     }
 
     @Bean

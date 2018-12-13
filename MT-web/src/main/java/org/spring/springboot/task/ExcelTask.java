@@ -59,7 +59,7 @@ public class ExcelTask {
     @Autowired
     private MongodbMtOldService mongodbMtOldService;
     //    @Scheduled(cron = "0 * 2 * * ?")
-    @Scheduled(cron = "0 30 23 * * ?")
+//    @Scheduled(cron = "0 30 23 * * ?")
     public void excel(){
         List<Messages> messagesList = new ArrayList<>();
         Messages messages = new Messages();

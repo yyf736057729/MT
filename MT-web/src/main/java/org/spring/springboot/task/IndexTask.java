@@ -51,7 +51,7 @@ public class IndexTask {
         this.redisTemplate = redisTemplate;
     }
 
-    @Scheduled(cron = "0/15 * * * * ?")
+//    @Scheduled(cron = "0/15 * * * * ?")
     public void taskPhoneCeche(){
         long current=System.currentTimeMillis();//当前时间毫秒数
         long zero=current/(1000*3600*24)*(1000*3600*24)- TimeZone.getDefault().getRawOffset();//今天零点零分零秒的毫秒数
@@ -70,7 +70,7 @@ public class IndexTask {
         countByRedis.setFindstatistics(findstatistics);
         countByRedis.setNotCount(notCount);
         net.sf.json.JSONObject jsonObject = net.sf.json.JSONObject.fromObject(countByRedis);
-        redisTemplate.opsForValue().set("newFindCount", jsonObject.toString(),129600, TimeUnit.SECONDS);
+        redisTemplate.opsForValue().set("newFindCounts", jsonObject.toString(),129600, TimeUnit.SECONDS);
 
 
     }

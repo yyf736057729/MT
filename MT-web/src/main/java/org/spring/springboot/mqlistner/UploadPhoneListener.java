@@ -46,7 +46,7 @@ public class UploadPhoneListener {
 
     @Autowired
     private MongodbPhoneService mongodbPhoneService;
-    @RabbitListener(queues="MT-phone-upload")    //监听器监听指定的Queue
+//    @RabbitListener(queues="MT-phone-upload")    //监听器监听指定的Queue
 //    @RabbitListener(queues="test1")
     public void processC(List<Phone> phones) {
         try {
@@ -62,10 +62,6 @@ public class UploadPhoneListener {
     private void doReadList(List list) throws InterruptedException, ExecutionException, ExecutionException {
 //        ThreadPoolTaskExecutor threadPoolTaskExecutor = new ThreadPoolTaskExecutor();
         ExecutorService threadPoolTaskExecutor = Executors.newFixedThreadPool(10);
-//        /**初始化集合**/
-//        List<String> list = new ArrayList<String>();
-
-
         /**接收集合各段的 执行的返回结果**/
         List<Future<Boolean>> futureList = new ArrayList<Future<Boolean>>();
 

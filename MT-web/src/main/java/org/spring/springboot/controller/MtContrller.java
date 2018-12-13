@@ -71,9 +71,9 @@ public class MtContrller {
         List<Statistic> findstatistics = null;
         CountByRedis countByRedis = null;
         int notCount = 0;
-        boolean hasKey = redisTemplate.hasKey("newFindCount");
+        boolean hasKey = redisTemplate.hasKey("newFindCounts");
         if (hasKey) { // 从缓存中取
-            Object o  =  redisTemplate.opsForValue().get("newFindCount");
+            Object o  =  redisTemplate.opsForValue().get("newFindCounts");
             JSONObject v = JSONObject.fromObject(o);
              countByRedis=(CountByRedis)JSONObject.toBean(v, CountByRedis.class);
             countAll = countByRedis.getCountAll();

@@ -4,6 +4,7 @@ import org.spring.springboot.domain.Phone;
 import org.spring.springboot.service.MongodbPhoneService;
 import org.spring.springboot.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.BulkOperations;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -45,19 +46,10 @@ public class MongodbPhoneServiceImpl implements MongodbPhoneService {
         //用来封装所有条件的对象
         Query query = new Query();
         //用来构建条件
+        query.with(new Sort(new Sort.Order(Sort.Direction.DESC,"id")));
         Criteria criteria = new Criteria();
-        /**
-         * 这里使用的正则表达式的方式
-         * 第二个参数Pattern.CASE_INSENSITIVE是对字符大小写不明感匹配
-         */
-        Pattern pattern = Pattern.compile("^.*"+"0"+".*$", Pattern.CASE_INSENSITIVE);
-        /**
-         *  criteria.and().regex() 在这里是构建了一个模糊查询的条件，并且用 'and' 相连
-         *  query.addCriteria 把条件封装起来
-         */
-
-        query.addCriteria(Criteria.where("status").regex(pattern));
-        List<Phone> phones = mongoTemplate.find(query.skip(0).limit(7200), Phone.class);//(query,返回类型.class,collectionName);
+        query.addCriteria(Criteria.where("status").is("0"));
+        List<Phone> phones = mongoTemplate.find(query.skip(0).limit(5100), Phone.class);//(query,返回类型.class,collectionName);
         return phones;
     }
 

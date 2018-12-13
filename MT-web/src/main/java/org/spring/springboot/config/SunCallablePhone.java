@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
-public class SunCallablePhone implements Callable<Boolean> {
+public class SunCallablePhone implements Runnable {
 
 	private static final Logger LOG = Logger.getLogger(SunCallablePhone.class);
 	/**当前是属于第几段线程**/
@@ -40,22 +40,19 @@ public class SunCallablePhone implements Callable<Boolean> {
 		this.mtSenderService  = mtSenderService;
 		this.mongoTemplate  = mongoTemplate;
 	}
-
+	public static int count = 0;
 
 
 	@Override
-	public Boolean call() throws Exception {
-
+	public void run() {
+		String name = Thread.currentThread().getName();
+		System.out.println(count+++"name:"+name);
 		System.err.println(String.format("pageIndex:%s size:%s",pageIndex,list.size()));
 		//将消息放入消息队列中
 		try{
 			mtSenderService.sendPhoneMassage(list);
-			return true;
 		}catch (Exception E){
-			return false;
 		}
-
-
 
 	}
 }

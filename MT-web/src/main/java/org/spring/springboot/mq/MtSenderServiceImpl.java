@@ -17,7 +17,7 @@ public class MtSenderServiceImpl implements MtSenderService {
     }
 
     public void sendPhoneMassage(List<Phone> list) {
-        template.convertAndSend("MT-phone",list);
+        template.convertAndSend("MT-phone-one",list);
     }
 
 

@@ -11,6 +11,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
@@ -73,25 +74,13 @@ public class MongodbMtOldServiceImpl implements MongodbMtOldService {
      * @return
      */
     public List mongodbFindByCreate() {
-        /*
-        * select
-		 DATE_FORMAT(`create`,"%Y-%m-%d")
-		from statistics GROUP BY
-		DATE_FORMAT(`create`,"%Y-%m-%d")*/
         Query query = new Query();
         query.addCriteria(Criteria.where("create").gte(""));
         List<Statistic> statistics = mongoTemplate.find(query, Statistic.class, "statistics");
 
         for(Statistic s:statistics){
             String s1 = DateUtil.getyyyy_MM_dd(s.getCreate());//yyyy_MM_dd
-//            s.setObj(s1);
         }
-//        Map<String, List<Statistic>> collect = statistics.stream().collect(Collectors.groupingBy(Statistic::getObj));
-//        List<Statistic> value = null;
-//        for (String key : collect.keySet()) {
-//             value = collect.get(key);
-//
-//        }
 
         return null;
     }
@@ -102,8 +91,6 @@ public class MongodbMtOldServiceImpl implements MongodbMtOldService {
      * @return
      */
     public int mongodbFindCountCreate(String date) {
-//        select count(1) from statistics
-//        where `coupon_display_name` LIKE  concat('%','新人','%') and  `create` LIKE  concat(#{date},'%')
         Query query = new Query();
         Criteria criteria = new Criteria();
         Pattern pattern1 = Pattern.compile("^.*"+"新人"+".*$", Pattern.CASE_INSENSITIVE);
@@ -141,9 +128,6 @@ public class MongodbMtOldServiceImpl implements MongodbMtOldService {
         }
 //        Criteria criteria = new Criteria();
         long count = mongoTemplate.count(query, Statistic.class);
-
-
-
         return count;
     }
 

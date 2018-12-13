@@ -55,7 +55,7 @@ public class FileStorageTask {
     }
 
 
-    @Scheduled(cron = "0/15 * * * * ?")
+//    @Scheduled(cron = "0 0/10 * * * ?")
     private void fileUpload() throws IOException, InterruptedException {
         //当钱文件夹下的所有文件
         //已经入库的文件不做读取，过滤（入库的文件名存入mongo）
