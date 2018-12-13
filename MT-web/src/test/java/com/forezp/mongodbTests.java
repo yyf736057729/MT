@@ -7,6 +7,8 @@ import org.spring.springboot.dao.StatisticsMongoDao;
 import org.spring.springboot.domain.Messages;
 import org.spring.springboot.domain.Phone;
 import org.spring.springboot.domain.Statistic;
+import org.spring.springboot.service.MongodbMtOldService;
+import org.spring.springboot.task.Common;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Sort;
@@ -154,6 +156,35 @@ public class mongodbTests {
 //        System.out.println(count3);
     }
 
+    @Autowired
+    private MongodbMtOldService mongodbMtOldService;
 
+    @Test
+    public void countTest(){
+
+        //今日已执行
+        long countByDay = mongoTemplate.count(new Query(), "statistics_"+ Common.TODAY);
+        System.out.println(countByDay);
+
+        String status = "3"; //已经领取过了，不能重复领取
+        long alreadyReceived = mongodbMtOldService.mongodbFindListStatistic(0, status,null);
+        status = "4";//风控的
+        long risk = mongodbMtOldService.mongodbFindListStatistic(0, status,null);
+        status = "2";//用户未中奖
+        long no_prize = mongodbMtOldService.mongodbFindListStatistic(0, status,null);
+        status = "9";//系统故障
+        long systemFailure = mongodbMtOldService.mongodbFindListStatistic(0, status,null);
+        status = "8";//访问频繁
+        long frequently = mongodbMtOldService.mongodbFindListStatistic(0, status,null);
+        status = "5";//错误的手机号
+        long errorPhone = mongodbMtOldService.mongodbFindListStatistic(0, status,null);
+        status = "1";//领取成功(新用户和老用户)
+        long success = mongodbMtOldService.mongodbFindListStatistic(0, status,null);
+        String couponDisplayName = "1";//新用户(首单)
+        long newPeople = mongodbMtOldService.mongodbFindListStatistic(0, status,couponDisplayName);
+        System.out.println("-end-");
+
+
+    }
 
 }

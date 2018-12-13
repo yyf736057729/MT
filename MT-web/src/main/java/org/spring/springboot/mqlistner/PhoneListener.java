@@ -57,7 +57,7 @@ public class PhoneListener {
 
     @Autowired
     private MongodbPhoneService mongodbPhoneService;
-    @RabbitListener(queues="MT-phone-one")    //监听器监听指定的Queue
+//    @RabbitListener(queues="MT-phone-one")    //监听器监听指定的Queue
     public void processC(List<Phone> phones) {
         try {
 //            //消费手机号码信息，

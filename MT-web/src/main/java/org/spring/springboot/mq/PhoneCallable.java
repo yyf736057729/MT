@@ -129,7 +129,7 @@ public class PhoneCallable implements Runnable {
             }
         }
         System.out.println("插入----------");
-        mongoTemplate.insertAll(statistics);
+        mongoTemplate.insert(statistics,"statistics_"+Common.TODAY);
         System.out.println("插入结束-----------");
         if (phones.size() > 0) {
             System.out.println("访问频繁回归!");

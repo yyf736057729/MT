@@ -8,6 +8,8 @@ import org.spring.springboot.service.MongodbMtOldService;
 import org.spring.springboot.service.MongodbPhoneService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
@@ -57,17 +59,26 @@ public class IndexTask {
         long zero=current/(1000*3600*24)*(1000*3600*24)- TimeZone.getDefault().getRawOffset();//今天零点零分零秒的毫秒数
 
         Timestamp timestamp = new Timestamp(zero);
-        int countByDay = mongodbMtOldService.mongodbFindCount(timestamp);
-        List<Statistic> findstatistics = mongodbMtOldService.mongodbFindstatistics(null);
-        int notCount = mongodbPhoneService.mongodbNotCount();
-        CountAll countAlls = new CountAll();
-        countAlls.setCountByDay(countByDay);
-        if (null != findstatistics) {
-            countAlls.setList(findstatistics);
-        }
+//        int countByDay = mongodbMtOldService.mongodbFindCount(timestamp); //今日已执行
+
+        int notCount = mongodbPhoneService.mongodbNotCount();   //未执行
+
+        //今日已执行
+        long countByDay = mongoTemplate.count(new Query(), "statistics_"+Common.TODAY);//(query,返回类型.class,collectionName);  /
+
+
+//        CountAll countAlls = new CountAll();
+//        countAlls.setCountByDay((int)countByDay);
+
+//        List<Statistic> findstatistics = mongodbMtOldService.mongodbFindstatistics(null);
+
+//        if (null != findstatistics) {
+//            countAlls.setList(findstatistics);
+//        }
+//        countByRedis.setFindstatistics(findstatistics);
         CountByRedis countByRedis = new CountByRedis();
-        countByRedis.setCountByDay(countByDay);
-        countByRedis.setFindstatistics(findstatistics);
+        countByRedis.setCountByDay((int)countByDay);
+//
         countByRedis.setNotCount(notCount);
         net.sf.json.JSONObject jsonObject = net.sf.json.JSONObject.fromObject(countByRedis);
         redisTemplate.opsForValue().set("newFindCounts", jsonObject.toString(),129600, TimeUnit.SECONDS);

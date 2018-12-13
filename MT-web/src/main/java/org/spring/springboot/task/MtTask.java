@@ -13,6 +13,7 @@ import org.spring.springboot.service.MongodbPhoneService;
 import org.spring.springboot.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -67,7 +68,7 @@ public class MtTask {
     public static int count = 0;
 
 //    @Scheduled(cron = "0 0/10 7-23 * * ?")
-    @Scheduled(cron = "0 0/1 7-22 * * ?")
+//    @Scheduled(cron = "0 0/1 7-22 * * ?")
 //    @Scheduled(cron = "0/20 * * * * ?")
     public void goMT(){
         List<Phone> list = mongodbPhoneService.mongodbFindList();
@@ -120,14 +121,19 @@ public class MtTask {
         }
     }
 
-//    @Scheduled(cron = "0 * 1 * * ?")
+//    @Scheduled(cron = "0 * 4 * * ?")
+    //每天凌晨4点，将已完成数据清空
     public void taskCleanPhone() {
         count=0;
         Common.count=0;
         Common.COUNTUPLOAD=0;
         Common.MQSEND=0;
-    }
 
+        Query query=new Query(Criteria.where("status").is(1));
+        mongoTemplate.remove(query,Phone.class);
+
+        Common.TODAY=DateUtil.getToday();
+    }
 
 
 

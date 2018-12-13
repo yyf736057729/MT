@@ -2,6 +2,7 @@ package org.spring.springboot.service.impl;
 
 import org.spring.springboot.domain.Statistic;
 import org.spring.springboot.service.MongodbMtOldService;
+import org.spring.springboot.task.Common;
 import org.spring.springboot.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -107,27 +108,26 @@ public class MongodbMtOldServiceImpl implements MongodbMtOldService {
      * @return
      */
     public long mongodbFindListStatistic(int i,String message,String couponDisplayName) {
-        long current=System.currentTimeMillis();//当前时间毫秒数
-        long zero=current/(1000*3600*24)*(1000*3600*24)- TimeZone.getDefault().getRawOffset();//今天零点零分零秒的毫秒数
-        Timestamp timestamp = new Timestamp(zero);
+//        long current=System.currentTimeMillis();//当前时间毫秒数
+//        long zero=current/(1000*3600*24)*(1000*3600*24)- TimeZone.getDefault().getRawOffset();//今天零点零分零秒的毫秒数
+//        Timestamp timestamp = new Timestamp(zero);
         Query query = new Query();
-        Date dateByBeforeDays2 = DateUtil.getDateByBeforeDays(-i-1);
-        Date date1 = DateUtil.formatStrDateToUTCStr(timestamp);
-        Date date2 = DateUtil.formatStrDateToUTCStr(dateByBeforeDays2);
+//        Date dateByBeforeDays2 = DateUtil.getDateByBeforeDays(-i-1);
+//        Date date1 = DateUtil.formatStrDateToUTCStr(timestamp);
+//        Date date2 = DateUtil.formatStrDateToUTCStr(dateByBeforeDays2);
         if(null != couponDisplayName && !"4".equals(message)){
-            query.addCriteria(Criteria.where("create").gte(date1).and("coupon_display_name").
+            query.addCriteria(Criteria.where("coupon_display_name").
                     is(couponDisplayName).and("message").is(message)
             );
         }else if(null != couponDisplayName && "4".equals(message)){
-            query.addCriteria(Criteria.where("create").gte(date1)
-                    .and("coupon_display_name").
+            query.addCriteria(Criteria.where("coupon_display_name").
                             is(couponDisplayName).orOperator(Criteria.where("message").is("4"),Criteria.where("message").is("40"))
             );
         }else{
-            query.addCriteria(Criteria.where("create").gte(date1).and("message").is(message));
+            query.addCriteria(Criteria.where("message").is(message));
         }
 //        Criteria criteria = new Criteria();
-        long count = mongoTemplate.count(query, Statistic.class);
+        long count = mongoTemplate.count(query, "statistics_"+ Common.TODAY);
         return count;
     }
 
